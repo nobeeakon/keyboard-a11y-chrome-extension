@@ -37,20 +37,20 @@ const DataPanel = ({
         )}
       </div>
 
-      <div className='textInfo'>
-          <p>
-            <strong>Text: </strong> <span>{text}</span>
-          </p>
-          <p>
-            <strong>Text type: </strong> <span>{textType}</span>
-          </p>
+      <div className="textInfo">
+        <p>
+          <strong>Text: </strong> <span>{text}</span>
+        </p>
+        <p>
+          <strong>Text type: </strong> <span>{textType}</span>
+        </p>
       </div>
 
-      <div className='savedInfo'>
+      <div className="savedInfo">
         <div className="dataPanelSaveButtons">
           {/* TODO add keyboard shortcuts */}
           <label>
-            <input type="checkbox" checked={!!savedData?.isSaved} onChange={() => onSave('save')} />{' '}
+            <input type="checkbox" checked={!!savedData?.isSaved} onChange={() => onSave('save')} />
             Save
           </label>
           <label>
@@ -74,7 +74,7 @@ const DataPanel = ({
         <div>
           <label htmlFor="text-comment">Note</label>
           <input
-          className='note-input'
+            className="note-input"
             id="text-comment"
             type="text"
             value={savedData?.note ?? ''}

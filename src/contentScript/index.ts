@@ -1,5 +1,5 @@
-console.info('contentScript is running')
-import getElementInfo, { type ElementInfo } from './keyboard.js'
+import getActiveElementInfo, { type ElementInfo } from './getActiveElementInfo.js'
+import { getTagName } from './element/tagInfo.js'
 
 const isHtmlElement = (element: Element): element is HTMLElement => element instanceof HTMLElement
 
@@ -23,14 +23,18 @@ export const isFocusEvent = (event: unknown): event is FocusEvent => {
   return false
 }
 
-document.addEventListener('focusin', () => {
-  const currentElement = document.activeElement
+let lastActive: Element | null = null
 
-  if (!currentElement || !isHtmlElement(currentElement)) return
+document.addEventListener('keyup', () => {
+  if (document.activeElement !== lastActive) {
+    lastActive = document.activeElement
 
-  const data = getElementInfo(currentElement, window.location.href, window.getComputedStyle)
+    if (!lastActive || !isHtmlElement(lastActive) || getTagName(lastActive) === 'body') return
 
-  const focusEvent: FocusEvent = { type: FOCUS_EVENT, data }
+    const data = getActiveElementInfo(lastActive, window.location.href, window.getComputedStyle)
 
-  chrome.runtime.sendMessage(focusEvent)
+    const focusEvent: FocusEvent = { type: FOCUS_EVENT, data }
+
+    chrome.runtime.sendMessage(focusEvent)
+  }
 })

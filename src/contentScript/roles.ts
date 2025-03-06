@@ -131,3 +131,29 @@ export function getRole(htmlElement: HTMLElement) {
 
   return null
 }
+
+export function isRolePresentation(htmlElement: HTMLElement) {
+  return htmlElement.getAttribute('role') === 'presentation'
+}
+
+// TODO role generic
+
+// taken from https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/
+const rolesWithoutName = [
+  'caption',
+  'code',
+  'deletion',
+  'emphasis',
+  'generic',
+  'insertion',
+  'mark',
+  'none',
+  'paragraph',
+  'presentation',
+  'strong',
+  'subscript',
+  'superscript',
+]
+
+// taken from https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/
+const requireAriaLabel = ['alertdialog', 'application', 'dialog', 'region']

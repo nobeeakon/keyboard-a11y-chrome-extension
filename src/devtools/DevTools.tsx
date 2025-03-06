@@ -9,8 +9,8 @@ import DataPanel from './DataPanel'
 
 type StoredData = FocusEvent['data'] & {
   hasNoFocus?: boolean
-  isNotVisible?: boolean;
-  note?:string;
+  isNotVisible?: boolean
+  note?: string
 }
 
 // store info only while the dev tools are open
@@ -69,8 +69,8 @@ export const DevTools = () => {
 
         if (action === 'noFocus') {
           if (!newItem || !newItem?.hasNoFocus) {
-            newData[storedKey] = { ...(newItem??data), hasNoFocus: true }
-          }  else{
+            newData[storedKey] = { ...(newItem ?? data), hasNoFocus: true }
+          } else {
             delete newItem['hasNoFocus']
             newData[storedKey] = newItem
           }
@@ -78,7 +78,7 @@ export const DevTools = () => {
 
         if (action === 'notVisible') {
           if (!newItem || !newItem?.isNotVisible) {
-            newData[storedKey] = {...(newItem??data), isNotVisible: true }
+            newData[storedKey] = { ...(newItem ?? data), isNotVisible: true }
           } else {
             delete newItem['isNotVisible']
             newData[storedKey] = newItem
@@ -91,47 +91,37 @@ export const DevTools = () => {
     [data, storedKey],
   )
 
-  const updateNote = (newNote:string) => {
+  const updateNote = (newNote: string) => {
     if (!data || !storedKey) return
 
     setStoredData((prev) => {
       const newData = { ...prev }
-      const newItem = newData[storedKey] ? { ...newData[storedKey] } : {...data}
+      const newItem = newData[storedKey] ? { ...newData[storedKey] } : { ...data }
 
-
-      if(newNote.trim()) {
-        newItem['note'] = newNote;
-      } else if('note' in newItem) {
-        delete newItem.note;
+      if (newNote.trim()) {
+        newItem['note'] = newNote
+      } else if ('note' in newItem) {
+        delete newItem.note
       }
 
+      newData[storedKey] = newItem
 
-
-      newData[storedKey] = newItem;
-
-      return newData;
-
+      return newData
     })
   }
 
-
   const exportData = () => {
-    const downloadLink = document.createElement('a');
-    downloadLink.download = "keyboard_accessibility.json"
-    const blob = new Blob([
-      JSON.stringify(storedData,null,2)
-    ], {type: 'application/json'})
+    const downloadLink = document.createElement('a')
+    downloadLink.download = 'keyboard_accessibility.json'
+    const blob = new Blob([JSON.stringify(storedData, null, 2)], { type: 'application/json' })
 
+    downloadLink.href = URL.createObjectURL(blob)
 
-    downloadLink.href = URL.createObjectURL(blob);
+    document.body.appendChild(downloadLink)
+    downloadLink.click()
 
-  document.body.appendChild(downloadLink);
-      downloadLink.click();
-
-      downloadLink.remove();
-
+    downloadLink.remove()
   }
-
 
   const savedData =
     storedKey && storedData[storedKey]
@@ -139,7 +129,7 @@ export const DevTools = () => {
           isSaved: true,
           hasNoFocus: !!storedData[storedKey].hasNoFocus,
           isNotVisible: !!storedData[storedKey].isNotVisible,
-          note: storedData[storedKey].note??""
+          note: storedData[storedKey].note ?? '',
         }
       : undefined
 

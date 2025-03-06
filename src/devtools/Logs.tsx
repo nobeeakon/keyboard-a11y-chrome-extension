@@ -22,14 +22,12 @@ const LogData = ({ logData }: { logData: LogType['data'] }) => {
   )
 }
 
-
 const EMOJI: Record<LogType['type'], string> = {
   error: '🚨',
   warn: '⚠️',
   info: 'ℹ️',
   minor: '📟',
 }
-
 
 const LOG_TITLE: Record<LogType['type'], string> = {
   error: 'Error',
@@ -38,31 +36,28 @@ const LOG_TITLE: Record<LogType['type'], string> = {
   minor: 'Minor issue',
 }
 
-
-const LOG_TYPE_TO_STYLING_MAP:Record<LogType['type'], string> = {
+const LOG_TYPE_TO_STYLING_MAP: Record<LogType['type'], string> = {
   error: 'is-danger',
   warn: 'is-warning',
   info: 'is-success',
   minor: 'is-info',
 }
 
-const LogTitle = ({logType}:{logType: LogType['type']}) => (
+const LogTitle = ({ logType }: { logType: LogType['type'] }) => (
   <div>
     <h4>
-<span aria-hidden>{EMOJI[logType]} </span> 
- <span>{LOG_TITLE[logType]}</span>
+      <span aria-hidden>{EMOJI[logType]} </span>
+      <span>{LOG_TITLE[logType]}</span>
     </h4>
   </div>
 )
 
 const Logs = ({ logs }: { logs: LogType[] }) => {
-
-
   const loggedInfo = logs.map((logItem, idx) => {
     const additionalInfo = logItem?.additionalInfo ?? []
     return (
       <div key={idx} className={`notification ${LOG_TYPE_TO_STYLING_MAP[logItem.type]}`}>
-        <LogTitle logType={logItem.type}/>
+        <LogTitle logType={logItem.type} />
         {'issue' in logItem ? (
           <div>
             <span> Issue: </span>
@@ -71,8 +66,7 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
         ) : null}
         {'message' in logItem ? (
           <div>
-            <span> 
-                Message: </span>
+            <span>Message: </span>
             {logItem.message}
           </div>
         ) : null}

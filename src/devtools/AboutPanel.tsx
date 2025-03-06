@@ -1,13 +1,14 @@
 const AboutPanel = ({ backToDataPanel }: { backToDataPanel: () => void }) => (
   <div>
-    {' '}
     <section className="section">
       <div className="container">
         <h1 className="title">Keyboard a11y</h1>
         <button onClick={backToDataPanel} className="button is-primary">
           Try it out
         </button>
-        <p className="has-text-danger"><em>This is in pre-alpha state (active development)</em></p>
+        <p className="has-text-danger">
+          <em>This is in pre-alpha state (active development)</em>
+        </p>
         <p className="has-text-danger">Please report any bug, also happy to discuss any feature</p>
       </div>
     </section>
