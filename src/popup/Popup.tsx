@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react'
-
-const GITHUB_PAGE = 'https://github.com/guocaoyi/create-chrome-ext'
+const GITHUB_PAGE = 'https://github.com/nobeeakon/keyboard-a11y-chrome-extension'
 
 import './Popup.css'
 
