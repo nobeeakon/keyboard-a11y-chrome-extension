@@ -1,3 +1,5 @@
+import { getCssSelector } from 'css-selector-generator'
+
 import { log, type LogType } from './logger'
 import { getRole } from './roles'
 import { GetComputeStyles } from './element/types'
@@ -7,7 +9,6 @@ import { getHtmlString } from './element/getHtmlString'
 import { getTagName, isHTMLTag } from './element/tagInfo'
 import { isElementWithLabel } from './element/isControlElement'
 import { getTabIndex } from './element/getTabIndex'
-import { elemToSelector } from './element/elementSelector'
 import { getAriaLabelText } from './element/aria-text/getAriaLabel'
 import { elementValidations } from './element/elementValidations'
 import { getValidAriaValueText } from './element/aria-text/getAriaValueText'
@@ -197,7 +198,7 @@ function getActiveElementInfo(
   const role = getRole(htmlElement)
   const tagName = getTagName(htmlElement)
   const tabIndex = getTabIndex(htmlElement, logs)
-  const selector = elemToSelector(htmlElement)
+  const selector = getCssSelector(htmlElement)
 
   // additional validations
   elementValidations(htmlElement, logs)

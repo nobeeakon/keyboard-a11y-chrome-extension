@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
 import Logs from './Logs'
 import type { FocusEvent } from '../contentScript'
+
+const INSPECT_FAILED_ERROR_MESSAGE = 'Failed to inspect'
 
 const DataPanel = ({
   data,
@@ -19,7 +22,7 @@ const DataPanel = ({
   goToAboutPanel: () => void
 }) => {
   const { role, tagName, text, textType, tabIndex, htmlElement, selector, logs } = data
-
+  const [showFailedToInspect, setShowFailedToInspect] = useState(false)
   // TODO copy to clipboard
   // const onCssSelectorToClipboard = () => {
   //   navigator.clipboard.writeText(selector)
@@ -27,18 +30,38 @@ const DataPanel = ({
   //   .catch(err => console.error("Clipboard write failed:", err));
   // }
 
-  // TODO check this one, it doesn't always works fine, e.g. https://www.mercadolibre.com.mx/ofertas/envio-gratis#menu=categories
+  // update when new data comes in
+  useEffect(() => {
+    setShowFailedToInspect(false)
+  }, [data])
+
   const onInspectElement = () => {
-    chrome.devtools.inspectedWindow.eval(`
+    setShowFailedToInspect(false)
+    chrome.devtools.inspectedWindow.eval(
+      `
       (function() {
         const element = document.querySelector("${selector}");
         if (element) {
           inspect(element);
+          return true;
         } else {
           console.warn("Element not found.");
+        return false;
         }
       })();
-    `)
+    `,
+      (res, error) => {
+        if (!res) {
+          console.error(`[inspectElement] invalid css selector:  ${selector}`)
+        }
+        if (error) {
+          console.error('[inspectElement] Something went wrong: ', error)
+        }
+        if (!res || error) {
+          setShowFailedToInspect(true)
+        }
+      },
+    )
   }
 
   return (
@@ -105,6 +128,13 @@ const DataPanel = ({
       </div>
 
       <div>
+        {showFailedToInspect && (
+          <div>
+            <div>
+              <p className="has-text-danger">{INSPECT_FAILED_ERROR_MESSAGE}</p>
+            </div>
+          </div>
+        )}
         <h3>HTML element info</h3>
         <ul>
           <li>
