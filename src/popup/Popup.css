@@ -1,9 +1,3 @@
-@media (prefers-color-scheme: light) {
-  a:hover {
-    color: #61dafb;
-  }
-}
-
 main {
   padding: 1em;
   margin: 0 auto;
@@ -23,6 +17,5 @@ h3 {
 }
 
 a {
-  color: #cccccc;
   text-decoration: underline;
 }
