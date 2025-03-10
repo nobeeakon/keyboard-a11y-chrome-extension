@@ -1,6 +1,6 @@
 const AboutPanel = ({ backToDataPanel }: { backToDataPanel: () => void }) => (
-  <div>
-    <section className="section">
+  <div className="mainContainer">
+    <section className="">
       <div className="container">
         <h1 className="title">Keyboard a11y</h1>
         <button onClick={backToDataPanel} className="button is-primary">
@@ -12,7 +12,7 @@ const AboutPanel = ({ backToDataPanel }: { backToDataPanel: () => void }) => (
         <p className="has-text-danger">Please report any bug, also happy to discuss any feature</p>
       </div>
     </section>
-    <section className="section">
+    <section className="">
       <div className="container">
         <h2 className="title is-4">About the tool</h2>
         <p>Main features</p>
@@ -27,7 +27,7 @@ const AboutPanel = ({ backToDataPanel }: { backToDataPanel: () => void }) => (
         </div>
       </div>
     </section>
-    <section className="section">
+    <section>
       <div className="container">
         <h2 className="title is-4">Keyboard accessibility</h2>
         <p>What to consider when doing keyboard testing?</p>
@@ -59,7 +59,7 @@ const AboutPanel = ({ backToDataPanel }: { backToDataPanel: () => void }) => (
         </div>
       </div>
     </section>
-    <section className="section">
+    <section className="">
       <div className="container">
         <h2 className="title is-4">Other tools</h2>
         <p>

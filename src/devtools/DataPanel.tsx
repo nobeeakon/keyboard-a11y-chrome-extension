@@ -20,21 +20,41 @@ const DataPanel = ({
 }) => {
   const { role, tagName, text, textType, tabIndex, htmlElement, selector, logs } = data
 
+  // TODO copy to clipboard
+  // const onCssSelectorToClipboard = () => {
+  //   navigator.clipboard.writeText(selector)
+  //   .then(() => console.log("Copied successfully!"))
+  //   .catch(err => console.error("Clipboard write failed:", err));
+  // }
+
+  const onInspectElement = () => {
+    chrome.devtools.inspectedWindow.eval(`
+      (function() {
+        const element = document.querySelector("${selector}");
+        if (element) {
+          inspect(element);
+        } else {
+          console.warn("Element not found.");
+        }
+      })();
+    `)
+  }
+
   return (
-    <div>
-      <div className="dataPanelActionButtons">
-        <div>
-          <button className="button is-primary" onClick={goToAboutPanel}>
+    <div className="mainContainer">
+      <div className="headerNavContainer">
+        <nav className="nav">
+          <button role="tab" className="tab" onClick={goToAboutPanel}>
             About
           </button>
-        </div>
-        {savedItems === 0 ? null : (
-          <div>
-            <button className="button is-primary" onClick={onExportData}>
+        </nav>
+        <div className="exportButtonContainer">
+          {savedItems === 0 ? null : (
+            <button className="button is-primary is-small" onClick={onExportData}>
               Export Data ({savedItems} {savedItems === 1 ? 'item' : 'items'})
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="textInfo">
@@ -102,14 +122,16 @@ const DataPanel = ({
             </li>
           )}
           <li>
-            <span>HTML: </span>
+            <span>
+              HTML:{' '}
+              <button onClick={onInspectElement} className="button is-small">
+                Inspect
+              </button>{' '}
+            </span>
             <code>{htmlElement}</code>
           </li>
-          <li>
-            <span>Selector: </span>
-            <code>{selector}</code>
-          </li>
         </ul>
+        {/* <div><button onClick={onCssSelectorToClipboard} className='button is-small'>Copy CSS selector</button></div> */}
       </div>
       <div>
         <Logs logs={logs} />

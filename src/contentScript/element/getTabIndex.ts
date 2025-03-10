@@ -2,12 +2,14 @@ import { log, LOG_ID, type LogType } from '../logger'
 import { getHtmlString } from './getHtmlString'
 
 export function getTabIndex(htmlElement: HTMLElement, logs: LogType[]) {
-  const tabIndexString = htmlElement.tabIndex?.toString()
-  const tabIndexInt = tabIndexString ? parseInt(tabIndexString) : undefined
-  const isOnlyDigits = /^\-{0,1}\d+$/.test(tabIndexString)
+  const tabIndexString = htmlElement.getAttribute('tabindex')?.toString()
+  const tabIndexInt = tabIndexString ? parseInt(tabIndexString, 10) : undefined
+  const isOnlyDigits = tabIndexString ? /^\-{0,1}\d+$/.test(tabIndexString) : true // defaulting to true in case it doesn't exist
 
   const tabIndexNumeric =
-    !isOnlyDigits || tabIndexInt == null || isNaN(tabIndexInt) ? null : tabIndexInt
+    !isOnlyDigits || tabIndexInt == null || isNaN(tabIndexInt) || !isFinite(tabIndexInt)
+      ? null
+      : tabIndexInt
 
   if (!!tabIndexString && !isOnlyDigits) {
     logs.push(
@@ -34,5 +36,5 @@ export function getTabIndex(htmlElement: HTMLElement, logs: LogType[]) {
     )
   }
 
-  return tabIndexNumeric == null || isNaN(tabIndexNumeric) ? null : tabIndexNumeric
+  return tabIndexNumeric
 }

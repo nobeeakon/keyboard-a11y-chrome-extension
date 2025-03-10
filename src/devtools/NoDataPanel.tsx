@@ -1,15 +1,19 @@
 const NoDataPanel = ({ goToAboutPanel }: { goToAboutPanel: () => void }) => (
-  <div>
+  <div className="mainContainer">
+    <nav className="nav">
+      <button role="tab" className="tab" onClick={goToAboutPanel}>
+        About
+      </button>
+    </nav>
     <h1 className="title">Keyboard a11y</h1>
-    <section className="section">
-      <div className="container">
-        <p>No data yet</p>
-      </div>
+    <section>
+      <p className="mainText  has-text-info">
+        <em>Please start navigating the site using the keyboard (eg. Tabs key)</em>
+      </p>
     </section>
 
     <section className="section">
       <div className="container">
-        <h2 className="title is-4">Keyboard accessibility</h2>
         <p>What to consider when doing keyboard testing?</p>
         <div className="content">
           <ol>
@@ -22,7 +26,7 @@ const NoDataPanel = ({ goToAboutPanel }: { goToAboutPanel: () => void }) => (
             <li>The navigation order make sense</li>
           </ol>
         </div>
-        <h3 className="title is-5">Resources</h3>
+        <p>Resources</p>
         <div className="content">
           <ul>
             <li>
@@ -44,10 +48,6 @@ const NoDataPanel = ({ goToAboutPanel }: { goToAboutPanel: () => void }) => (
         </div>
       </div>
     </section>
-
-    <button className="button is-primary" onClick={goToAboutPanel}>
-      About section
-    </button>
   </div>
 )
 

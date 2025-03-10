@@ -72,7 +72,7 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
         ) : null}
         {additionalInfo.length === 0 ? null : (
           <div>
-            More info in:
+            More info in:{' '}
             {additionalInfo.map((linkItem, idx) => (
               <span key={`additional-info-${idx}`}>
                 <a href={linkItem.href} target="blank">

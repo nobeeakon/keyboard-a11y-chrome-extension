@@ -10,17 +10,8 @@ p {
   margin: 0;
 }
 
-.notification {
-  --notification-border-color: lightgray;
-  padding: 8px;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  border: 2px solid var(--notification-border-color);
-  border-radius: 8px;
-}
-
-.notification.is-danger {
-  --notification-border-color: red;
+.mainContainer {
+  margin: 8px 16px;
 }
 
 .dataPanelSaveButtons {
@@ -52,4 +43,43 @@ p {
 
 .note-input {
   width: 100%;
+}
+
+/* no data panel */
+
+.mainText {
+  font-weight: bold;
+  font-size: 1rem;
+  margin: 16px 8px 32px;
+}
+
+.nav {
+  margin-bottom: 8px;
+  display: flex;
+  gap: 4px;
+}
+.nav .tab {
+  background: none;
+  margin: 0;
+  padding: 4px;
+  text-align: initial;
+  border: none;
+  appearance: none;
+  border-bottom: 1px solid;
+  font-weight: bold;
+}
+.nav .tab:focus,
+.nav .tab:hover {
+  border-bottom: 2px solid;
+}
+
+/* data panel */
+.headerNavContainer {
+  display: flex;
+  align-items: baseline;
+}
+.exportButtonContainer {
+  display: flex;
+  flex-grow: 1;
+  justify-content: end;
 }
