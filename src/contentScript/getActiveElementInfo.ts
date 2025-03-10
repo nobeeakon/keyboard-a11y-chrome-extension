@@ -44,6 +44,7 @@ const CONSOLE_LOG_PREFFIX = '[a11y]'
 // TODO  https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#name_calculation https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/ w3c name calculation
 // https://www.w3.org/TR/accname-1.2/
 // aria-describedby vs aria-details vs aria-description https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-details
+// - [ ] TODO see Tiendas oficiales: https://www.mercadolibre.com.mx/ofertas/envio-gratis#menu=categories . It doesn't always get's the right text
 function getAccessibleText(
   htmlNode: Node,
   logs: LogType[],

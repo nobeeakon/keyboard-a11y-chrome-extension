@@ -27,6 +27,7 @@ const DataPanel = ({
   //   .catch(err => console.error("Clipboard write failed:", err));
   // }
 
+  // TODO check this one, it doesn't always works fine, e.g. https://www.mercadolibre.com.mx/ofertas/envio-gratis#menu=categories
   const onInspectElement = () => {
     chrome.devtools.inspectedWindow.eval(`
       (function() {
