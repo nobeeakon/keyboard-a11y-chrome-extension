@@ -1,10 +1,10 @@
-import { isHTMLTag, getTagName } from './tagInfo'
+import { getTagName } from './tagInfo'
 import { getAriaLabelText } from './aria-text/getAriaLabel'
 import { log, type LogType } from '../logger'
 import { getHtmlString } from './getHtmlString'
 import { getCssSelector } from './getCssSelector'
-
-const SEARCH_UP_TREE_MAX = 500 // TODO abstract into a separate function that receives a callback
+import searchInParent from './searchInParent'
+import { getTextFomContent } from '../getActiveElementInfo'
 
 function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
   const ariaLabel = getAriaLabelText(labelElement, logs)
@@ -21,7 +21,7 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
     return ariaLabel.text
   }
 
-  const labelTextContent = labelElement.textContent?.trim() // TODO should it use something fancier than textContent?
+  const labelTextContent = getTextFomContent(labelElement, logs)
   if (!labelTextContent) {
     logs.push(
       log.error({
@@ -59,17 +59,12 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
   }
 
   // `<label>` tag is in the parent
-  let currentElement: HTMLElement | null = inputElement
-  for (let i = 0; i < SEARCH_UP_TREE_MAX; i++) {
-    if (!currentElement || isHTMLTag(currentElement)) {
-      break
-    }
+  const parentLabelElement = searchInParent(inputElement, (currentElement) => {
+    return getTagName(currentElement) === 'label'
+  })
 
-    if (getTagName(currentElement) === 'label') {
-      return getLabelElementText(currentElement, logs)
-    }
-
-    currentElement = currentElement.parentElement
+  if (parentLabelElement && getTagName(parentLabelElement) === 'label') {
+    return getLabelElementText(parentLabelElement, logs)
   }
 
   // check label has for=""

@@ -1,7 +1,7 @@
 {
   "name": "keyboard-a11y",
   "displayName": "keyboard accessibility",
-  "version": "0.0.1021",
+  "version": "0.0.103",
   "author": "Daniel Torres",
   "description": "Browser extension for keyboard accessibility testing",
   "type": "module",
