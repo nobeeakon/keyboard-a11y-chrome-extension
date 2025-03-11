@@ -2,6 +2,7 @@ import { getHtmlString } from '../getHtmlString'
 import { log, type LogType } from '../../logger'
 import { getRole, isRolePresentation } from '../../roles'
 import { isAriaHidden } from '../elementHidden'
+import { getCssSelector } from '../getCssSelector'
 
 const ARIA_LABEL_NOT_SUPPORTED_ROLES_SET = new Set([
   'code',
@@ -26,6 +27,7 @@ const ARIA_LABEL_NOT_SUPPORTED_ROLES_SET = new Set([
 /** Validates elements using 'aria-label' or 'aria-labelledby' */
 export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
   const htmlString = getHtmlString(htmlElement)
+  const htmlElementSelector = getCssSelector(htmlElement)
 
   const role = getRole(htmlElement)
 
@@ -35,9 +37,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
         issue: 'aria label used in an element with no role',
         message:
           "'aria-label' is often ignored by assistive technologies in elements with no role like <div> or <span>. Prefer a semantic element, or add a role attribute",
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
         additionalInfo: [
           {
             href: 'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label',
@@ -55,9 +56,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
       log.error({
         issue: 'Element does not support aria label',
         message: `Element with role="${role}" does not support aria label.`,
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
         additionalInfo: [
           {
             href: 'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label#associated_roles',
@@ -74,9 +74,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.warn({
         issue: "using 'aria-hidden' in an element with an aria label",
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -85,9 +84,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.warn({
         issue: "using role='presentation' in an element with an aria label",
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -97,9 +95,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
       log.minor({
         issue:
           "using aria label in an element with 'alt' or 'title'. Aria label will take precedence.",
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -113,9 +110,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
         issue:
           "using 'aria-label' and 'aria-labelledby' in the same element. 'aria-labelledby' will take precedence",
         message: "Prefer 'aria-labelledby' and consider removing 'aria-label'.",
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -140,9 +136,8 @@ export function getAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.error({
         issue: 'Empty aria-label',
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: getHtmlString(htmlElement),
+        htmlElementSelector: getCssSelector(htmlElement),
       }),
     )
   }

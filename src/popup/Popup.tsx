@@ -13,7 +13,7 @@ const Popup = () => {
         </p>
         <ul>
           <li>Go to the menu: More tools/Developer Tools</li>
-          <li>or press: ⌥⌘I (on Mac), Control+Shift+C (Windows, Linux)</li>
+          <li>or press: ⌥⌘I (Mac), Control+Shift+C (Windows, Linux)</li>
         </ul>
         <p>Then navigate to the "Keyboard a11y" tab.</p>
       </div>

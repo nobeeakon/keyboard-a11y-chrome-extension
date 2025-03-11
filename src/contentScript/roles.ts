@@ -33,6 +33,13 @@ export function getRole(htmlElement: HTMLElement) {
         default:
           return 'textbox' // Most input types are treated as textboxes
       }
+    case 'h1':
+    case 'h2':
+    case 'h3':
+    case 'h4':
+    case 'h5':
+    case 'h6':
+      return 'heading'
     case 'select':
       return 'combobox'
     case 'textarea':

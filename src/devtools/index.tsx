@@ -10,6 +10,4 @@ ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
   </React.StrictMode>,
 )
 
-chrome.devtools.panels.create('Keyboard a11y', '', '../../devtools.html', function () {
-  console.log('devtools panel create')
-})
+chrome.devtools.panels.create('Keyboard a11y', '', '../../devtools.html', function () {})

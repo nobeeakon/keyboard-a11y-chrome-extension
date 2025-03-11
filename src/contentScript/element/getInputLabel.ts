@@ -2,6 +2,7 @@ import { isHTMLTag, getTagName } from './tagInfo'
 import { getAriaLabelText } from './aria-text/getAriaLabel'
 import { log, type LogType } from '../logger'
 import { getHtmlString } from './getHtmlString'
+import { getCssSelector } from './getCssSelector'
 
 const SEARCH_UP_TREE_MAX = 500 // TODO abstract into a separate function that receives a callback
 
@@ -12,9 +13,8 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.error({
         issue: `<label> using '${ariaLabel.type}'`,
-        data: {
-          labelElement: getHtmlString(labelElement),
-        },
+        htmlElement: getHtmlString(labelElement),
+        htmlElementSelector: getCssSelector(labelElement),
       }),
     )
 
@@ -26,9 +26,8 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.error({
         issue: '<label> missing text',
-        data: {
-          labelElement: getHtmlString(labelElement),
-        },
+        htmlElement: getHtmlString(labelElement),
+        htmlElementSelector: getCssSelector(labelElement),
       }),
     )
 
@@ -40,6 +39,9 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
 
 export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
   const ariaLabel = getAriaLabelText(inputElement, logs)
+  const htmlElementString = getHtmlString(inputElement)
+  const htmlElementSelector = getCssSelector(inputElement)
+
   if (ariaLabel?.text) {
     if (ariaLabel.type === 'aria-labelledby') {
       logs.push(
@@ -47,9 +49,8 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
           issue: "using 'aria-labelledby' as an input label",
           message:
             'prefer using the <label> tag or confirm that clicking the label element focuses the <input>',
-          data: {
-            inputElement: getHtmlString(inputElement),
-          },
+          htmlElement: htmlElementString,
+          htmlElementSelector,
         }),
       )
     }
@@ -81,7 +82,8 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.error({
         issue: 'missing <label>',
-        data: { inputElement: getHtmlString(inputElement) },
+        htmlElement: htmlElementString,
+        htmlElementSelector,
       }),
     )
 
@@ -92,8 +94,9 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.warn({
         issue: 'multiple <label>',
+        htmlElement: htmlElementString,
+        htmlElementSelector,
         data: {
-          inputElement: getHtmlString(inputElement),
           labelElement: labelElements
             .map((labelElementItem) => getHtmlString(labelElementItem))
             .join(' '),

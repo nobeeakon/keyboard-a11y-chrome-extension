@@ -6,17 +6,18 @@ import { getRole, isRolePresentation } from '../roles'
 import { getTagName } from './tagInfo'
 import { isHTMLTag } from './tagInfo'
 import { getNestedInteractiveElementsQueries } from './isControlElement'
+import { getCssSelector } from './getCssSelector'
 
 export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
   const htmlString = getHtmlString(htmlElement)
+  const htmlElementSelector = getCssSelector(htmlElement)
 
   if (isAriaHidden(htmlElement)) {
     logs.push(
       log.warn({
         issue: "focusable element with 'aria-hidden'",
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -25,9 +26,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.warn({
         issue: 'focusable element with role="presentation"',
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
 
@@ -37,9 +37,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
           issue: "role='presentation' with aria label ('aria-label' or 'aria-labelledby')",
           message:
             "If the element is just presentational it doesn't need aria text. If is not purely presentational please use another role or prefer html semantic elements like <button>",
-          data: {
-            htmlElement: htmlString,
-          },
+          htmlElement: htmlString,
+          htmlElementSelector,
           additionalInfo: [
             {
               href: 'https://a11ytips.dev/docs/roles-vs-presentation/',
@@ -58,7 +57,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
         issue: 'focusable element with no role',
         message:
           'Is OK to not have focusable elements without roles if is a list or similar cases, not for clickable items', // TODO improve the message
-        data: { htmlElement: htmlString },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -73,7 +73,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
         issue: "role='button' not using <button> html tag",
         message:
           "When possible prefer to use the '<button>' html tag. Otherwise, confirm that this element is keyboard accessible ('enter', 'space') and that handles focus properly.",
-        data: { htmlElement: htmlString },
+        htmlElement: htmlString,
+        htmlElementSelector,
       }),
     )
   }
@@ -83,8 +84,9 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
     logs.push(
       log.warn({
         issue: 'element inside aria-hidden',
+        htmlElement: htmlString,
+        htmlElementSelector,
         data: {
-          htmlElement: htmlString,
           ariaHiddenElement: getHtmlString(insideAriaHiddenElement),
         },
       }),
@@ -99,7 +101,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
       logs.push(
         log.warn({
           issue: "'grid' role with no interactive element",
-          data: { htmlElement: htmlString },
+          htmlElement: htmlString,
+          htmlElementSelector,
           additionalInfo: [
             {
               href: 'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/grid_role',
@@ -111,7 +114,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
     } else {
       logs.push(
         log.info({
-          data: { htmlElement: htmlString },
+          htmlElement: htmlString,
+          htmlElementSelector,
           message:
             "'grid' role. Confirm that the elements inside are keyboard accessible (Arrow keys, etc.)",
           additionalInfo: [
@@ -133,9 +137,8 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
       log.error({
         issue: 'element contains nested controls',
         message,
-        data: {
-          htmlElement: htmlString,
-        },
+        htmlElement: htmlString,
+        htmlElementSelector,
         additionalInfo: [
           {
             href: 'https://accessibleweb.com/question-answer/why-are-nested-interactive-controls-an-accessibility-issue/',

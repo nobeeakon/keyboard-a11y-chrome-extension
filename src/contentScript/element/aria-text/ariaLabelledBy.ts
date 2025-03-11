@@ -1,6 +1,7 @@
 import { log, type LogType } from '../../logger'
 import { getHtmlString } from '../getHtmlString'
 import { validateAriaLabel } from './ariaLabel'
+import { getCssSelector } from '../getCssSelector'
 
 // TODO what about aria-describedby
 // TODO aria-labelledby https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#naming_with_child_content mentions that it incorporates names from visibility:hidden and so
@@ -39,9 +40,8 @@ export function getAriaLabelledBy(htmlElement: HTMLElement, logs: LogType[]) {
       log.error({
         issue: 'aria-labelledby refers to an non-existing element',
         message: `target labelledById: ${labelledById}`,
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: getHtmlString(htmlElement),
+        htmlElementSelector: getCssSelector(htmlElement),
       }),
     )
 
@@ -59,9 +59,8 @@ export function getAriaLabelledBy(htmlElement: HTMLElement, logs: LogType[]) {
       log.error({
         issue: 'aria-labelledby text is empty',
         message: `target labelledById: ${labelledById}`,
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: getHtmlString(htmlElement),
+        htmlElementSelector: getCssSelector(htmlElement),
       }),
     )
   }

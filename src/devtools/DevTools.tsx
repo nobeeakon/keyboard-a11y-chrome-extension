@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { isFocusEvent, type FocusEvent } from '../contentScript'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { isFocusEvent, isProcessingEvent, type FocusEvent } from '../contentScript'
 
 import NoDataPanel from './NoDataPanel'
 import AboutPanel from './AboutPanel'
@@ -21,19 +21,34 @@ export const DevTools = () => {
   const [currentView, setCurrentView] = useState<'noData' | 'data' | 'about'>('noData')
   const [data, setData] = useState<FocusEvent['data'] | null>(null)
   const [storedData, setStoredData] = useState<Record<string, StoredData>>({})
+  const [isProcessing, setIsProcessing] = useState(false)
+  const currentTabIdRef = useRef<undefined | number>()
 
-  // add event listener to focus event coming from the tab
+  // add event listener tab events
   useEffect(() => {
+    let timeout: NodeJS.Timeout | undefined
+
     const handleMessage = (
       message: any,
       sender: chrome.runtime.MessageSender,
       sendResponse: (response?: any) => void,
     ) => {
-      // message is the message from the other part of your extension
-      // sender has information about who sent the message
-      // sendResponse is a function you can call to send a response back
+      if (currentTabIdRef.current == null) {
+        currentTabIdRef.current = sender.tab?.id
+      }
+      // only process the events from the current tab
+      if (currentTabIdRef.current !== sender.tab?.id) {
+        return
+      }
 
-      if (isFocusEvent(message)) {
+      if (isProcessingEvent(message)) {
+        timeout = setTimeout(() => {
+          setIsProcessing(true)
+        }, 500)
+      } else if (isFocusEvent(message)) {
+        clearTimeout(timeout)
+
+        setIsProcessing(false)
         setData(message.data)
       }
 
@@ -45,6 +60,7 @@ export const DevTools = () => {
 
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessage)
+      clearTimeout(timeout)
     }
   }, [])
 
@@ -153,6 +169,7 @@ export const DevTools = () => {
     <main>
       <DataPanel
         savedData={savedData}
+        isProcessing={isProcessing}
         updateNote={updateNote}
         savedItems={Object.keys(storedData).length}
         onSave={onSave}

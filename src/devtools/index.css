@@ -10,6 +10,10 @@ p {
   margin: 0;
 }
 
+code {
+  word-break: break-all;
+}
+
 .mainContainer {
   margin: 8px 16px;
 }
@@ -82,4 +86,11 @@ p {
   display: flex;
   flex-grow: 1;
   justify-content: end;
+}
+
+/* html element */
+.htmlElementContainer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
 }

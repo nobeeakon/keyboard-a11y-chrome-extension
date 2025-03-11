@@ -1,4 +1,17 @@
-import type { LogType } from '../contentScript/logger'
+import type { LogType } from '../../contentScript/logger'
+import HtmlElement from './HtmlElement'
+
+const parseKey = (keyName: string) => {
+  const result: string[] = []
+  for (let i = 0; i < keyName.length; i++) {
+    const currChar = keyName[i]
+    if (currChar === currChar.toUpperCase()) {
+      result.push(' ')
+    }
+    result.push(i === 0 ? currChar.toUpperCase() : currChar)
+  }
+  return result.join('')
+}
 
 const LogData = ({ logData }: { logData: LogType['data'] }) => {
   if (!logData || Object.keys(logData).length === 0) {
@@ -10,7 +23,7 @@ const LogData = ({ logData }: { logData: LogType['data'] }) => {
 
     return (
       <li key={idx}>
-        <b>{keyItem} </b>:{isElement ? <code>{valueItem}</code> : valueItem}
+        {parseKey(keyItem)}: {isElement ? <code>{valueItem}</code> : valueItem}
       </li>
     )
   })
@@ -20,13 +33,6 @@ const LogData = ({ logData }: { logData: LogType['data'] }) => {
       <ul>{entries}</ul>
     </div>
   )
-}
-
-const EMOJI: Record<LogType['type'], string> = {
-  error: '🚨',
-  warn: '⚠️',
-  info: 'ℹ️',
-  minor: '📟',
 }
 
 const LOG_TITLE: Record<LogType['type'], string> = {
@@ -43,21 +49,17 @@ const LOG_TYPE_TO_STYLING_MAP: Record<LogType['type'], string> = {
   minor: 'is-info',
 }
 
-const LogTitle = ({ logType }: { logType: LogType['type'] }) => (
-  <div>
-    <h4>
-      <span aria-hidden>{EMOJI[logType]} </span>
-      <span>{LOG_TITLE[logType]}</span>
-    </h4>
-  </div>
-)
-
+// TODO ? group logs based on the htmlElement, so to prevent to show the html + selector every time
 const Logs = ({ logs }: { logs: LogType[] }) => {
   const loggedInfo = logs.map((logItem, idx) => {
     const additionalInfo = logItem?.additionalInfo ?? []
     return (
-      <div key={idx} className={`notification ${LOG_TYPE_TO_STYLING_MAP[logItem.type]}`}>
-        <LogTitle logType={logItem.type} />
+      <div key={idx} className={`notification p-2 ${LOG_TYPE_TO_STYLING_MAP[logItem.type]}`}>
+        <div>
+          <h4 className="has-text-centered	">
+            <strong>{LOG_TITLE[logItem.type]}</strong>
+          </h4>
+        </div>
         {'issue' in logItem ? (
           <div>
             <span> Issue: </span>
@@ -70,6 +72,12 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
             {logItem.message}
           </div>
         ) : null}
+        <div>
+          <HtmlElement
+            htmlElementString={logItem.htmlElement}
+            selector={logItem.htmlElementSelector}
+          />
+        </div>
         {additionalInfo.length === 0 ? null : (
           <div>
             More info in:{' '}
@@ -82,7 +90,11 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
             ))}
           </div>
         )}
-        <LogData logData={logItem?.data} />
+        {!!logItem?.data && (
+          <div className="mt-3">
+            <LogData logData={logItem?.data} />
+          </div>
+        )}
       </div>
     )
   })

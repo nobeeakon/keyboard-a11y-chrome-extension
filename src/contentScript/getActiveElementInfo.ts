@@ -1,18 +1,17 @@
-import { getCssSelector } from 'css-selector-generator'
-
 import { log, type LogType } from './logger'
 import { getRole } from './roles'
 import { GetComputeStyles } from './element/types'
 import { isElementHidden, isAriaHidden } from './element/elementHidden'
 import { isHtmlTextNode, isHtmlElement } from './element/nodeType'
 import { getHtmlString } from './element/getHtmlString'
-import { getTagName, isHTMLTag } from './element/tagInfo'
+import { getTagName } from './element/tagInfo'
 import { isElementWithLabel } from './element/isControlElement'
 import { getTabIndex } from './element/getTabIndex'
 import { getAriaLabelText } from './element/aria-text/getAriaLabel'
 import { elementValidations } from './element/elementValidations'
 import { getValidAriaValueText } from './element/aria-text/getAriaValueText'
 import { getInputLabel } from './element/getInputLabel'
+import { getCssSelector, startCssSelectorCache } from './element/getCssSelector'
 
 const CONSOLE_LOG_PREFFIX = '[a11y]'
 
@@ -75,9 +74,8 @@ function getAccessibleText(
     logs.push(
       log.warn({
         issue: '<input> element missing label',
-        data: {
-          htmlElement: getHtmlString(htmlNode),
-        },
+        htmlElement: getHtmlString(htmlNode),
+        htmlElementSelector: getCssSelector(htmlNode),
       }),
     )
 
@@ -97,9 +95,8 @@ function getAccessibleText(
               displayText: ' Avoid browser Fallback',
             },
           ],
-          data: {
-            htmlElement: getHtmlString(htmlNode),
-          },
+          htmlElement: getHtmlString(htmlNode),
+          htmlElementSelector: getCssSelector(htmlNode),
         }),
       )
 
@@ -124,6 +121,8 @@ function getAccessibleText(
       logs.push(
         log.info({
           message: `Images should not have redundant 'alt' text: don't use 'image', 'photo', 'picture' or similar`,
+          htmlElement: getHtmlString(htmlNode),
+          htmlElementSelector: getCssSelector(htmlNode),
           additionalInfo: [
             {
               href: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/alt',
@@ -172,9 +171,8 @@ function getAccessibleText(
             displayText: ' Avoid browser Fallback',
           },
         ],
-        data: {
-          htmlElement: getHtmlString(htmlNode),
-        },
+        htmlElement: getHtmlString(htmlNode),
+        htmlElementSelector: getCssSelector(htmlNode),
       }),
     )
 
@@ -182,6 +180,22 @@ function getAccessibleText(
   }
 
   return null
+}
+
+const dedupLogs = (logs: LogType[]) => {
+  const prevLogIdSet = new Set()
+  const sanitizedLogs: LogType[] = []
+
+  logs.forEach((logItem) => {
+    if (prevLogIdSet.has(logItem.id)) {
+      return
+    }
+
+    sanitizedLogs.push(logItem)
+    prevLogIdSet.add(logItem.id)
+  })
+
+  return sanitizedLogs
 }
 
 /**
@@ -193,6 +207,7 @@ function getActiveElementInfo(
   locationHref: string,
   getComputedStyle: GetComputeStyles,
 ) {
+  startCssSelectorCache(htmlElement)
   const logs: LogType[] = []
 
   const role = getRole(htmlElement)
@@ -216,9 +231,8 @@ function getActiveElementInfo(
     logs.push(
       log.error({
         issue: 'focusable element missing text',
-        data: {
-          htmlElement: getHtmlString(htmlElement),
-        },
+        htmlElement: getHtmlString(htmlElement),
+        htmlElementSelector: selector,
       }),
     )
   }
@@ -232,7 +246,7 @@ function getActiveElementInfo(
     tabIndex,
     htmlElement: getHtmlString(htmlElement),
     selector,
-    logs,
+    logs: dedupLogs(logs),
   }
 }
 

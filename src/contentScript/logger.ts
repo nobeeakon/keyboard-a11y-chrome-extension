@@ -14,79 +14,98 @@ type AdditionalInfo = {
   href: string
 }
 
+const buildLogId = ({ htmlElement, text }: { htmlElement: string; text: string }) =>
+  `${htmlElement}-${text}`
+
 export const log = {
   error: ({
-    id,
     data,
     message,
     issue,
+    htmlElement,
+    htmlElementSelector,
     additionalInfo,
   }: {
-    id?: string
-    data: object
+    data?: object
     message?: string
     issue: string
+    htmlElement: string
+    htmlElementSelector: string
     additionalInfo?: AdditionalInfo[]
   }) => ({
     type: 'error' as const,
-    id,
+    id: buildLogId({ htmlElement, text: issue }),
+    htmlElement,
+    htmlElementSelector,
     data,
     message,
     issue,
     additionalInfo,
   }),
   warn: ({
-    id,
     data,
     message,
     issue,
+    htmlElement,
+    htmlElementSelector,
     additionalInfo,
   }: {
-    id?: string
-    data: object
+    data?: object
     message?: string
     issue: string
+    htmlElement: string
+    htmlElementSelector: string
     additionalInfo?: AdditionalInfo[]
   }) => ({
     type: 'warn' as const,
-    id,
+    id: buildLogId({ htmlElement, text: issue }),
+    htmlElement,
+    htmlElementSelector,
     data,
     message,
     issue,
     additionalInfo,
   }),
   info: ({
-    id,
     data,
     message,
+    htmlElement,
+    htmlElementSelector,
     additionalInfo,
   }: {
-    id?: string
     data?: object
-    message?: string
+    message: string
+    htmlElement: string
+    htmlElementSelector: string
     additionalInfo?: AdditionalInfo[]
   }) => ({
     type: 'info' as const,
-    id,
+    id: buildLogId({ htmlElement, text: message }),
+    htmlElement,
+    htmlElementSelector,
     data,
     message,
     additionalInfo,
   }),
   minor: ({
-    id,
     data,
     message,
     issue,
+    htmlElement,
+    htmlElementSelector,
     additionalInfo,
   }: {
-    id?: string
-    data: object
+    data?: object
     message?: string
     issue: string
+    htmlElement: string
+    htmlElementSelector: string
     additionalInfo?: AdditionalInfo[]
   }) => ({
     type: 'minor' as const,
-    id,
+    id: buildLogId({ htmlElement, text: issue }),
+    htmlElement,
+    htmlElementSelector,
     data,
     message,
     issue,
