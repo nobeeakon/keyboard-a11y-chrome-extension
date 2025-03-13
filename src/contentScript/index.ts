@@ -1,11 +1,7 @@
 import getActiveElementInfo, { type ElementInfo } from './getActiveElementInfo.js'
 import { getTagName } from './element/tagInfo.js'
-
+import { isObject } from './isObject.js'
 const isHtmlElement = (element: Element): element is HTMLElement => element instanceof HTMLElement
-
-const isObject = (item: unknown): item is object => {
-  return item != null && typeof item === 'object'
-}
 
 const FOCUS_EVENT = 'FOCUS_EVENT' as const
 export type FocusEvent = { type: typeof FOCUS_EVENT; data: ElementInfo }
@@ -37,11 +33,7 @@ const keyUpHandler = () => {
 
   if (!lastActive || !isHtmlElement(lastActive) || getTagName(lastActive) === 'body') return
 
-  const elementData = getActiveElementInfo(
-    lastActive,
-    window.location.href,
-    window.getComputedStyle,
-  )
+  const elementData = getActiveElementInfo(lastActive, window.location.href)
 
   const focusEvent: FocusEvent = { type: FOCUS_EVENT, data: elementData }
   chrome.runtime.sendMessage(focusEvent)

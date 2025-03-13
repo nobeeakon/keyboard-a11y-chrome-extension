@@ -1,42 +1,23 @@
 import { getHtmlString } from '../getHtmlString'
 import { log, type LogType } from '../../logger'
-import { getRole, isRolePresentation } from '../../roles'
 import { isAriaHidden } from '../elementHidden'
 import { getCssSelector } from '../getCssSelector'
-
-const ARIA_LABEL_NOT_SUPPORTED_ROLES_SET = new Set([
-  'code',
-  'term',
-  'emphasis',
-  'deletion',
-  'insertion',
-  'mark',
-  'subscript',
-  'superscript',
-  'time',
-  'caption',
-  'definition',
-  'generic',
-  'presentation',
-  'paragraph',
-  'none',
-  'strong',
-  'suggestion',
-]) // list taken from https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label#associated_roles
+import { getIsRoleWithoutAriaLabel } from '../../roles'
 
 /** Validates elements using 'aria-label' or 'aria-labelledby' */
 export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
   const htmlString = getHtmlString(htmlElement)
   const htmlElementSelector = getCssSelector(htmlElement)
 
-  const role = getRole(htmlElement)
+  const roleWithoutAriaLabel = getIsRoleWithoutAriaLabel(htmlElement)
 
-  if (!role) {
+  if (!roleWithoutAriaLabel.isValidToHaveAriaLabel) {
     logs.push(
       log.error({
-        issue: 'aria label used in an element with no role',
-        message:
-          "'aria-label' is often ignored by assistive technologies in elements with no role like <div> or <span>. Prefer a semantic element, or add a role attribute",
+        issue: "aria label in a element that shouldn't use it",
+        message: roleWithoutAriaLabel.role
+          ? `Aria label shouldn't be used in role: ${roleWithoutAriaLabel.role}`
+          : `Aria label shound't be used in an element with no role`,
         htmlElement: htmlString,
         htmlElementSelector,
         additionalInfo: [
@@ -44,21 +25,10 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
             href: 'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label',
             displayText: 'MDN: not all elements can be given accessible name',
           },
-        ],
-      }),
-    )
-
-    return false
-  }
-
-  if (ARIA_LABEL_NOT_SUPPORTED_ROLES_SET.has(role)) {
-    logs.push(
-      log.error({
-        issue: 'Element does not support aria label',
-        message: `Element with role="${role}" does not support aria label.`,
-        htmlElement: htmlString,
-        htmlElementSelector,
-        additionalInfo: [
+          {
+            href: 'https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#accessiblenameguidancebyrole',
+            displayText: 'w3: names and descriptions',
+          },
           {
             href: 'https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-label#associated_roles',
             displayText: 'MDN: aria label not supported roles',
@@ -67,7 +37,7 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
       }),
     )
 
-    return false
+    return true // default to true just to default but it has the above log
   }
 
   if (isAriaHidden(htmlElement)) {
@@ -78,16 +48,8 @@ export function validateAriaLabel(htmlElement: HTMLElement, logs: LogType[]) {
         htmlElementSelector,
       }),
     )
-  }
 
-  if (isRolePresentation(htmlElement)) {
-    logs.push(
-      log.warn({
-        issue: "using role='presentation' in an element with an aria label",
-        htmlElement: htmlString,
-        htmlElementSelector,
-      }),
-    )
+    return false
   }
 
   if (htmlElement.getAttribute('alt')?.trim() || htmlElement.getAttribute('title')?.trim()) {

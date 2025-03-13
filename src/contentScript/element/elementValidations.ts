@@ -54,11 +54,17 @@ export function elementValidations(htmlElement: HTMLElement, logs: LogType[]) {
   if (!role) {
     logs.push(
       log.warn({
-        issue: 'focusable element with no role',
+        issue: 'Focusable element with no role',
         message:
-          'Is OK to not have focusable elements without roles if is a list or similar cases, not for clickable items', // TODO improve the message
+          'Role provides additional context to how to interact with the element, for users using assistive technologies',
         htmlElement: htmlString,
         htmlElementSelector,
+        additionalInfo: [
+          {
+            displayText: 'Focusable elements need a role',
+            href: 'https://dequeuniversity.com/rules/axe/4.1/focus-order-semantics',
+          },
+        ],
       }),
     )
   }

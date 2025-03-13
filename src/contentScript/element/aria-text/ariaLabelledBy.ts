@@ -2,7 +2,7 @@ import { log, type LogType } from '../../logger'
 import { getHtmlString } from '../getHtmlString'
 import { validateAriaLabel } from './ariaLabel'
 import { getCssSelector } from '../getCssSelector'
-import { getTextFomContent } from '../../getActiveElementInfo'
+import getTextFromContent from '../../accessible-name/getTextFromContent'
 
 // TODO what about aria-describedby
 // TODO aria-labelledby https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#naming_with_child_content mentions that it incorporates names from visibility:hidden and so
@@ -51,10 +51,21 @@ export function getAriaLabelledBy(htmlElement: HTMLElement, logs: LogType[]) {
 
   // The aria-labelledby property cannot be chained
   const labelledByText = labelledElements
-    .map((labelElementItem) => (!labelElementItem ? '' : getTextFomContent(labelElementItem, logs)))
+    .map((labelElementItem) => {
+      if (!labelElementItem) {
+        return ''
+      }
+
+      // NOTE: aria-labelledby text can be obtained from elements using aria-hidden, display:none, visibility:0, or hidden attribute
+      const textContent = getTextFromContent.getTextFomContent(labelElementItem, logs)
+      return textContent.status === 'new' ? textContent.text : ''
+    })
     .join(' ')
     .replace(/\s+/g, ' ')
     .trim()
+
+  getTextFromContent.cleanGetFromText()
+
   if (labelledByText === '') {
     logs.push(
       log.error({

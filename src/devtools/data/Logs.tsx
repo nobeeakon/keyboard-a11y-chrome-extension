@@ -54,9 +54,9 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
   const loggedInfo = logs.map((logItem, idx) => {
     const additionalInfo = logItem?.additionalInfo ?? []
     return (
-      <div key={idx} className={`notification p-2 ${LOG_TYPE_TO_STYLING_MAP[logItem.type]}`}>
+      <div key={idx} className={`notification p-2 mb-2 ${LOG_TYPE_TO_STYLING_MAP[logItem.type]}`}>
         <div>
-          <h4 className="has-text-centered	">
+          <h4 className="has-text-centered">
             <strong>{LOG_TITLE[logItem.type]}</strong>
           </h4>
         </div>
@@ -81,11 +81,11 @@ const Logs = ({ logs }: { logs: LogType[] }) => {
         {additionalInfo.length === 0 ? null : (
           <div>
             More info in:{' '}
-            {additionalInfo.map((linkItem, idx) => (
-              <span key={`additional-info-${idx}`}>
+            {additionalInfo.map((linkItem) => (
+              <span key={linkItem.href}>
                 <a href={linkItem.href} target="blank">
                   {linkItem.displayText}
-                </a>
+                </a>{' '}
               </span>
             ))}
           </div>

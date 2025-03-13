@@ -4,9 +4,13 @@ import { log, type LogType } from '../logger'
 import { getHtmlString } from './getHtmlString'
 import { getCssSelector } from './getCssSelector'
 import searchInParent from './searchInParent'
-import { getTextFomContent } from '../getActiveElementInfo'
+import getTextFromContent from '../accessible-name/getTextFromContent'
 
-function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
+function getLabelElementText(
+  labelElement: HTMLElement,
+  logs: LogType[],
+  inputElement: HTMLElement,
+) {
   const ariaLabel = getAriaLabelText(labelElement, logs)
 
   if (ariaLabel?.text) {
@@ -18,11 +22,12 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
       }),
     )
 
-    return ariaLabel.text
+    return { status: 'new' as const, text: ariaLabel.text }
   }
 
-  const labelTextContent = getTextFomContent(labelElement, logs)
-  if (!labelTextContent) {
+  const labelTextContent = getTextFromContent.getTextFomContent(labelElement, logs, inputElement)
+  getTextFromContent.cleanGetFromText()
+  if (labelTextContent.status === 'new' && !labelTextContent.text) {
     logs.push(
       log.error({
         issue: '<label> missing text',
@@ -30,14 +35,26 @@ function getLabelElementText(labelElement: HTMLElement, logs: LogType[]) {
         htmlElementSelector: getCssSelector(labelElement),
       }),
     )
-
-    return null
   }
+
 
   return labelTextContent
 }
 
-export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
+type GetInputResponse =
+  | {
+      status: 'new'
+      text: string | null
+    }
+  | {
+      status: 'visited'
+      text?: never
+    }
+
+/** This is a function that can be called recursively in case the input element has a label as its parent
+ * thus it needs to recognize if the element has been previously visited or not
+ */
+export function getInputLabel(inputElement: HTMLElement, logs: LogType[]): GetInputResponse {
   const ariaLabel = getAriaLabelText(inputElement, logs)
   const htmlElementString = getHtmlString(inputElement)
   const htmlElementSelector = getCssSelector(inputElement)
@@ -55,7 +72,7 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
       )
     }
 
-    return ariaLabel.text
+    return { status: 'new' as const, text: ariaLabel.text }
   }
 
   // `<label>` tag is in the parent
@@ -64,25 +81,17 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
   })
 
   if (parentLabelElement && getTagName(parentLabelElement) === 'label') {
-    return getLabelElementText(parentLabelElement, logs)
+    return getLabelElementText(parentLabelElement, logs, inputElement)
   }
 
   // check label has for=""
   const elementId = inputElement.id?.trim()
-  if (!elementId) return null
+  if (!elementId) return { status: 'new' as const, text: null }
 
   const labelElements = [...document.querySelectorAll(`label[for="${elementId}"]`)] as HTMLElement[] // TODO fix this type
 
   if (labelElements.length === 0) {
-    logs.push(
-      log.error({
-        issue: 'missing <label>',
-        htmlElement: htmlElementString,
-        htmlElementSelector,
-      }),
-    )
-
-    return null
+    return { status: 'new' as const, text: '' }
   }
 
   if (labelElements.length > 1) {
@@ -102,5 +111,9 @@ export function getInputLabel(inputElement: HTMLElement, logs: LogType[]) {
 
   // TODO check what happens in this case... like how to get to the right text. (consider label, aria-label, etc...)
   // for example <label id="hola1" for="input1">hola 1</label><label id="hola2" for="input1">hola 2</label><input type="text" id="input1" >
-  return labelElements.map((labelItem) => getLabelElementText(labelItem, logs)).join(' ')
+  const labelsText = labelElements
+    .map((labelItem) => getLabelElementText(labelItem, logs, inputElement).text ?? '')
+    .join(' ')
+
+  return { status: 'new' as const, text: labelsText }
 }
